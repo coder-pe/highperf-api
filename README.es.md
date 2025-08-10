@@ -396,7 +396,6 @@ git push origin feature/nueva-mejora
 ## 📚 Recursos Adicionales
 
 ### **Documentación**
-- 📖 [CLAUDE.md](CLAUDE.md) - Guía completa para desarrolladores
 - 🐳 [Docker Best Practices](docs/docker.md)
 - ☸️ [Kubernetes Guide](docs/kubernetes.md)
 - 📊 [Monitoring Setup](docs/monitoring.md)
