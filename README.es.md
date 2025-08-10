@@ -330,7 +330,6 @@ func withCustomMiddleware(next http.Handler) http.Handler {
 ### **Configuración Avanzada**
 - Ver `internal/config/config.go` para todas las opciones
 - Variables de entorno en `.env.example`
-- Documentación detallada en `CLAUDE.md`
 
 ## 🎯 Casos de Uso
 
