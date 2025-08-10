@@ -1,65 +1,65 @@
 # High Performance Go API Template
 
-🚀 A high-performance REST API template built with Go, featuring enterprise architecture and production-optimized patterns. Includes all modern best practices for building scalable APIs.
+🚀 Una plantilla de API REST de alto rendimiento construida en Go, con arquitectura empresarial y optimizada para producción. Incluye todas las buenas prácticas modernas para desarrollo de APIs escalables.
 
-## ✨ Key Features
+## ✨ Características Principales
 
-### 🏗️ **Enterprise Architecture**
-- **Clean Architecture** with proper layer separation
-- **Repository Pattern** for data access
-- **Dependency Injection** with interfaces
-- **Configuration Management** centralized
-- **Error Handling** standardized
-- **Structured Logging** with context
+### 🏗️ **Arquitectura Empresarial**
+- **Clean Architecture** con separación de capas
+- **Repository Pattern** para acceso a datos
+- **Dependency Injection** con interfaces
+- **Configuration Management** centralizada
+- **Error Handling** estandarizado
+- **Logging Estructurado** con contexto
 
-### ⚡ **High Performance**
-- **Buffer Pooling**: JSON buffer reuse with `sync.Pool`
-- **Zero-Copy JSON**: Direct serialization without intermediate copies
-- **Connection Pooling**: Optimized DB/Redis connections
-- **SO_REUSEPORT**: Multi-process scaling (Linux)
-- **Circuit Breaker**: Cascading failure protection
+### ⚡ **Alto Rendimiento**
+- **Buffer Pooling**: Reutilización de buffers JSON con `sync.Pool`
+- **Zero-Copy JSON**: Serialización directa sin copias intermedias
+- **Connection Pooling**: Optimización de conexiones DB/Redis
+- **SO_REUSEPORT**: Escalado multi-proceso (Linux)
+- **Circuit Breaker**: Protección contra cascading failures
 - **Rate Limiting**: Token bucket (1000 req/s configurable)
 
-### 🔒 **Security**
-- **JWT Authentication** with refresh tokens
+### 🔒 **Seguridad**
+- **JWT Authentication** con refresh tokens
 - **Password Hashing** Argon2id (enterprise-grade)
-- **Request Validation** with customizable rules
-- **CORS** and security headers
+- **Request Validation** con reglas customizables
+- **CORS** y security headers
 - **SQL Injection** prevention
 - **Rate Limiting** anti-DDoS
 
 ### 🚀 **DevOps Ready**
-- **Docker** multi-stage with minimal image
-- **Docker Compose** complete stack
-- **Kubernetes** manifests (optional)
-- **CI/CD** pipeline ready
+- **Docker** multi-stage con imagen mínima
+- **Docker Compose** stack completo
+- **Kubernetes** manifests (opcional)
+- **CI/CD** pipelines preparados
 - **Monitoring** Prometheus + Grafana
-- **Advanced Health Checks**
+- **Health Checks** avanzados
 
-## 🎯 Use as Template
+## 🎯 Usar Como Plantilla
 
-### **Generate New Project**
+### **Generar Nuevo Proyecto**
 ```bash
-# Clone this template
+# Clonar esta plantilla
 git clone <this-repo-url> api-template
 cd api-template
 
-# Generate new project
+# Generar nuevo proyecto
 ./template-generator.sh my-awesome-api ../projects/
 
-# The generator automatically creates:
-# - New import paths
-# - Project-specific configuration
-# - Database and migrations
-# - Customized docker-compose
-# - Initialized git repository
+# El generador creará automáticamente:
+# - Nuevos import paths
+# - Configuración específica del proyecto  
+# - Base de datos y migraciones
+# - Docker compose personalizado
+# - Git repository inicializado
 ```
 
-### **Quick Setup**
+### **Setup Rápido**
 ```bash
 cd my-awesome-api
 cp .env.example .env
-# Edit .env with your configuration
+# Editar .env con tu configuración
 make docker-compose-up
 ```
 
@@ -76,31 +76,31 @@ make docker-compose-up
 | `DELETE` | `/users/:id` | Delete user | Yes | 100ms |
 | `GET` | `/users` | List users (paginated) | Yes | 100ms |
 
-## 🛠️ Development
+## 🛠️ Desarrollo
 
-### **Requirements**
+### **Requisitos**
 - Go 1.24.5+
 - Docker & Docker Compose
-- Make (optional)
+- Make (opcional)
 
-### **Local Setup**
+### **Setup Local**
 ```bash
-# Development setup
+# Setup desarrollo
 make dev-setup
 
-# Copy configuration
+# Copiar configuración
 cp .env.example .env
-# Edit .env with your values
+# Editar .env con tus valores
 
-# Run with Docker (recommended)
+# Ejecutar con Docker (recomendado)
 make docker-compose-up
 
-# Or run locally
+# O ejecutar localmente
 make deps
 make run
 ```
 
-### **Environment Variables**
+### **Variables de Entorno**
 ```bash
 # Server
 PORT=8080
@@ -125,46 +125,46 @@ LOG_LEVEL=info
 LOG_FORMAT=json
 ```
 
-## 🧪 Testing & Quality
+## 🧪 Testing y Quality
 
-### **Complete Testing**
+### **Testing Completo**
 ```bash
-# Full test suite
+# Suite completa
 make test
 
-# With coverage (>80%)
+# Con coverage (>80%)
 make test-coverage
 
-# Benchmarks only
+# Solo benchmarks
 make benchmark
 
-# Integration tests
+# Tests de integración
 make test-integration
 
-# API testing (server must be running)
+# API testing (servidor debe estar corriendo)
 ./test-api.sh
 ```
 
 ### **Code Quality**
 ```bash
-# Linting and formatting
+# Linting y formatting
 make check
 
 # Security scan
 make security-scan
 
-# View all commands
+# Ver todos los comandos
 make help
 ```
 
-## 📊 Monitoring & Observability
+## 📊 Monitoring y Observabilidad
 
-### **Monitoring Stack**
+### **Stack de Monitoring**
 ```bash
-# Start complete stack
+# Iniciar stack completo
 make docker-compose-up
 
-# Access:
+# Acceder a:
 # - API: http://localhost:8080
 # - Prometheus: http://localhost:9090
 # - Grafana: http://localhost:3000 (admin/admin)
@@ -175,21 +175,21 @@ make docker-compose-up
 # Health endpoint
 curl http://localhost:8080/healthz
 
-# Detailed health (includes DB/Redis)
+# Detailed health (incluye DB/Redis)
 curl http://localhost:8080/health/detailed
 ```
 
-### **Available Metrics**
+### **Métricas Disponibles**
 - Request duration histograms
-- Request count per endpoint
-- Error rates by status code
+- Request count por endpoint
+- Error rates por status code
 - Database connection pool stats
 - Circuit breaker states
 - Rate limiting metrics
 
-## 🏗️ Complete Architecture
+## 🏗️ Arquitectura Completa
 
-### **Project Structure**
+### **Estructura del Proyecto**
 ```
 highperf-api/
 ├── cmd/api/                 # Entry point
@@ -226,9 +226,9 @@ highperf-api/
 └─────────────────────────┘
 ```
 
-### **Middleware Stack** (execution order)
+### **Middleware Stack** (orden de ejecución)
 1. **CORS & Security Headers**
-2. **Request Logging** - Structured logging with request ID
+2. **Request Logging** - Structured logging con request ID
 3. **Authentication** - JWT validation  
 4. **Rate Limiting** - Token bucket (1000 req/s)
 5. **Circuit Breaker** - Failure protection
@@ -245,19 +245,19 @@ HTTP Request → Middleware Chain → Route Handler → Business Logic → Repos
 
 ## 🚀 Deployment
 
-### **Production with Docker**
+### **Producción con Docker**
 ```bash
-# Optimized build
+# Build optimizada
 make docker-build
 
-# Deploy with compose
+# Deploy con compose
 make docker-compose-up
 
-# Real-time logs  
+# Logs en tiempo real  
 make docker-compose-logs
 ```
 
-### **Production Variables**
+### **Variables de Producción**
 ```bash
 # Security
 JWT_SECRET=your-256-bit-secret-key-here
@@ -273,20 +273,20 @@ LOG_LEVEL=warn
 METRICS_ENABLED=true
 ```
 
-### **Kubernetes Configuration** (optional)
+### **Configuración Kubernetes** (opcional)
 ```bash
-# Generate K8s manifests
+# Generar manifests K8s
 make k8s-manifests
 
-# Deploy to cluster
+# Deploy a cluster
 kubectl apply -f k8s/
 ```
 
 ## ⚡ Performance Benchmarks
 
-### **Typical Metrics** (MacBook Pro M1)
+### **Métricas Típicas** (MacBook Pro M1)
 ```bash
-# Main endpoints
+# Endpoints principales
 BenchmarkHealthCheck-8     5000000    220 ns/op     96 B/op     2 allocs/op
 BenchmarkGetUser-8         1000000   1100 ns/op    400 B/op     8 allocs/op
 BenchmarkCreateUser-8       500000   2400 ns/op    800 B/op    12 allocs/op
@@ -296,50 +296,50 @@ BenchmarkJSONPooling-8     2000000    800 ns/op    200 B/op     3 allocs/op
 BenchmarkStandardJSON-8    1000000   1200 ns/op    450 B/op     7 allocs/op
 ```
 
-### **Measured Optimizations**
-- 🚀 **JSON Pooling**: 40% fewer allocations
-- 🚀 **Buffer Reuse**: 60% less GC pressure
-- 🚀 **Connection Pool**: 80% less DB latency
+### **Optimizaciones Medidas**
+- 🚀 **JSON Pooling**: 40% menos allocations
+- 🚀 **Buffer Reuse**: 60% menos GC pressure
+- 🚀 **Connection Pool**: 80% menos latencia DB
 - 🚀 **Circuit Breaker**: 99.9% uptime under load
 
-## 🔧 Customization
+## 🔧 Personalización
 
-### **Add New Endpoint**
+### **Agregar Nuevo Endpoint**
 ```bash
-# 1. Model in internal/models/
-# 2. Repository in internal/repository/
-# 3. Handler in internal/handlers/
-# 4. Route in internal/httpserver/server.go
-# 5. Tests in *_test.go
+# 1. Modelo en internal/models/
+# 2. Repository en internal/repository/
+# 3. Handler en internal/handlers/
+# 4. Route en internal/httpserver/server.go
+# 5. Tests en *_test.go
 ```
 
-### **Add Custom Middleware**
+### **Agregar Middleware Custom**
 ```go
 // internal/httpserver/middleware.go
 func withCustomMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // Your logic here
+        // Tu lógica aquí
         next.ServeHTTP(w, r)
     })
 }
 ```
 
-### **Advanced Configuration**
-- See `internal/config/config.go` for all options
-- Environment variables in `.env.example`
-- Detailed documentation in `CLAUDE.md`
+### **Configuración Avanzada**
+- Ver `internal/config/config.go` para todas las opciones
+- Variables de entorno en `.env.example`
+- Documentación detallada en `CLAUDE.md`
 
-## 🎯 Use Cases
+## 🎯 Casos de Uso
 
-### **Ideal For:**
-- 🏢 **Enterprise APIs** with high concurrency
-- 🚀 **Microservices** with high performance  
-- 📱 **Mobile App Backend** with millions of users
-- 🛒 **E-commerce APIs** with traffic spikes
-- 🎮 **Gaming APIs** requiring low latency
-- 📊 **Data APIs** with intensive processing
+### **Ideal Para:**
+- 🏢 **APIs Empresariales** con alta concurrencia
+- 🚀 **Microservicios** de alto rendimiento  
+- 📱 **Backend de Apps Mobile** con millones de usuarios
+- 🛒 **E-commerce APIs** con traffic spikes
+- 🎮 **Gaming APIs** que requieren baja latencia
+- 📊 **Data APIs** con processing intensivo
 
-### **Implementation Examples:**
+### **Ejemplos de Implementación:**
 ```bash
 # E-commerce API
 ./template-generator.sh ecommerce-api
@@ -354,33 +354,33 @@ func withCustomMiddleware(next http.Handler) http.Handler {
 ./template-generator.sh social-api
 ```
 
-## 🤝 Contributing & Community
+## 🤝 Contribuir & Comunidad
 
-### **Improve the Template**
+### **Mejorar la Plantilla**
 ```bash
-# 1. Fork the project
+# 1. Fork el proyecto
 git fork <this-repo>
 
 # 2. Feature branch
-git checkout -b feature/new-improvement
+git checkout -b feature/nueva-mejora
 
-# 3. Develop with tests
+# 3. Desarrollar con tests
 make test
 
 # 4. Pull request
-git push origin feature/new-improvement
+git push origin feature/nueva-mejora
 ```
 
-### **Standards**
-- ✅ Tests with >80% coverage
-- ✅ Benchmarks for optimizations
-- ✅ Updated documentation
-- ✅ Follow Go best practices
+### **Estándares**
+- ✅ Tests con >80% coverage
+- ✅ Benchmarks para optimizaciones
+- ✅ Documentación actualizada
+- ✅ Seguir Go best practices
 - ✅ Security-first approach
 
 ## 🏆 Roadmap
 
-### **v2.0 (In Development)**
+### **v2.0 (En Desarrollo)**
 - [ ] GraphQL support
 - [ ] gRPC endpoints
 - [ ] OpenTelemetry tracing
@@ -393,15 +393,15 @@ git push origin feature/new-improvement
 - [ ] Multi-tenant architecture
 - [ ] Advanced caching strategies
 
-## 📚 Additional Resources
+## 📚 Recursos Adicionales
 
-### **Documentation**
-- 📖 [CLAUDE.md](CLAUDE.md) - Complete developer guide
+### **Documentación**
+- 📖 [CLAUDE.md](CLAUDE.md) - Guía completa para desarrolladores
 - 🐳 [Docker Best Practices](docs/docker.md)
 - ☸️ [Kubernetes Guide](docs/kubernetes.md)
 - 📊 [Monitoring Setup](docs/monitoring.md)
 
-### **Useful Links**
+### **Enlaces Útiles**
 - [Go Performance Tips](https://github.com/golang/go/wiki/Performance)
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [HTTP/2 Optimization](https://hpbn.co/http2/)
@@ -411,13 +411,13 @@ git push origin feature/new-improvement
 
 <div align="center">
 
-### 🚀 **Ready to build your next world-class API!**
+### 🚀 **¡Listo para crear tu próxima API de clase mundial!**
 
 ```bash
 ./template-generator.sh my-amazing-api
 ```
 
-**⭐ If this template helped you, consider giving it a star**
+**⭐ Si esta plantilla te ayudó, considera darle una estrella**
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.24.5-blue.svg)](https://golang.org)
