@@ -247,17 +247,10 @@ This API is built with:
 - **Database**: PostgreSQL with repository pattern
 - **Caching**: Redis for session storage and caching
 
-For detailed architecture information, see [CLAUDE.md](CLAUDE.md).
-
 ## 📄 License
 
 MIT License
 EOF
-
-# Update CLAUDE.md
-echo -e "${BLUE}📝 Updating documentation...${NC}"
-sed -i.bak "s/highperf-api/$NEW_PROJECT_NAME/g" "$TARGET_DIR/CLAUDE.md"
-rm "$TARGET_DIR/CLAUDE.md.bak"
 
 # Clean up and initialize git
 echo -e "${BLUE}🔧 Finalizing project...${NC}"
