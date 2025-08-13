@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2025 Miguel Mamani <miguel.coder.per@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 // internal/httpserver/middleware.go
 package httpserver
 
@@ -23,7 +40,7 @@ func withRecover(next http.Handler) http.Handler {
 		defer func() {
 			if rec := recover(); rec != nil {
 				log.Printf("panic: %v", rec)
-				http.Error(w, "internal", http.StatusInternalServerError)
+				http.Error(w, "internal server error", http.StatusInternalServerError)
 			}
 		}()
 		next.ServeHTTP(w, r)
@@ -39,35 +56,48 @@ func withTimeouts(next http.Handler) http.Handler {
 	})
 }
 
-// Token bucket simple (per-process). Para producción usa un lib distribuido (Redis/leaky).
-func withRateLimit(next http.Handler) http.Handler {
-	const cap = 1000
-	const refill = 1000
-	const per = time.Second
+// --- Rate Limiter con estado encapsulado ---
 
-	var mu sync.Mutex
-	tokens := cap
-	last := time.Now()
+type RateLimiter struct {
+	mu     sync.Mutex
+	tokens int
+	last   time.Time
+	cap    int
+	refill int
+	per    time.Duration
+}
 
+func NewRateLimiter(capacity, refillRate int, per time.Duration) *RateLimiter {
+	return &RateLimiter{
+		tokens: capacity,
+		last:   time.Now(),
+		cap:    capacity,
+		refill: refillRate,
+		per:    per,
+	}
+}
+
+func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		mu.Lock()
-		// refill
-		elapsed := now.Sub(last)
+		rl.mu.Lock()
+
+		elapsed := now.Sub(rl.last)
 		if elapsed > 0 {
-			n := int(float64(refill) * elapsed.Seconds() / per.Seconds())
+			n := int(float64(rl.refill) * elapsed.Seconds() / rl.per.Seconds())
 			if n > 0 {
-				tokens = min(cap, tokens+n)
-				last = now
+				rl.tokens = min(rl.cap, rl.tokens+n)
+				rl.last = now
 			}
 		}
-		if tokens <= 0 {
-			mu.Unlock()
-			http.Error(w, "busy", http.StatusTooManyRequests)
+
+		if rl.tokens <= 0 {
+			rl.mu.Unlock()
+			http.Error(w, "too many requests", http.StatusTooManyRequests)
 			return
 		}
-		tokens--
-		mu.Unlock()
+		rl.tokens--
+		rl.mu.Unlock()
 		next.ServeHTTP(w, r)
 	})
 }
@@ -79,59 +109,50 @@ func min(a, b int) int {
 	return b
 }
 
-// Placeholder middleware for metrics collection
-func withMetrics(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Implement Prometheus/OpenTelemetry metrics
-		next.ServeHTTP(w, r)
-	})
+// --- Circuit Breaker con estado encapsulado ---
+
+type CircuitBreaker struct {
+	mu               sync.Mutex
+	failures         int
+	openUntil        time.Time
+	failureThreshold int
+	openFor          time.Duration
 }
 
-// Placeholder middleware for distributed tracing
-func withTracing(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Implement OpenTelemetry tracing
-		next.ServeHTTP(w, r)
-	})
+func NewCircuitBreaker(failureThreshold int, openFor time.Duration) *CircuitBreaker {
+	return &CircuitBreaker{
+		failureThreshold: failureThreshold,
+		openFor:          openFor,
+	}
 }
 
-// Circuit breaker muy compacto (para demo). En prod: sony/gobreaker.
-func withBreaker(next http.Handler) http.Handler {
-	const failureThreshold = 20
-	const openFor = 2 * time.Second
-
-	var mu sync.Mutex
-	failures := 0
-	openUntil := time.Time{}
-
+func (cb *CircuitBreaker) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		mu.Lock()
-		if time.Now().Before(openUntil) {
-			mu.Unlock()
-			http.Error(w, "unavailable", http.StatusServiceUnavailable)
+		cb.mu.Lock()
+		if time.Now().Before(cb.openUntil) {
+			cb.mu.Unlock()
+			http.Error(w, "service unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		mu.Unlock()
+		cb.mu.Unlock()
 
-		// Jitter para evitar thundering herd
 		jitter := time.Duration(rand.Intn(2)) * time.Millisecond
 		time.Sleep(jitter)
 
-		rr := &respRecorder{ResponseWriter: w, code: 200}
+		rr := &respRecorder{ResponseWriter: w, code: http.StatusOK}
 		next.ServeHTTP(rr, r)
 
-		mu.Lock()
-		if rr.code >= 500 {
-			failures++
-			if failures >= failureThreshold {
-				openUntil = time.Now().Add(openFor)
-				failures = 0
+		cb.mu.Lock()
+		if rr.code >= http.StatusInternalServerError {
+			cb.failures++
+			if cb.failures >= cb.failureThreshold {
+				cb.openUntil = time.Now().Add(cb.openFor)
+				cb.failures = 0
 			}
 		} else {
-			// éxito resetea lentamente
-			failures = int(math.Max(0, float64(failures-2)))
+			cb.failures = int(math.Max(0, float64(cb.failures-2)))
 		}
-		mu.Unlock()
+		cb.mu.Unlock()
 	})
 }
 
@@ -143,4 +164,20 @@ type respRecorder struct {
 func (r *respRecorder) WriteHeader(status int) {
 	r.code = status
 	r.ResponseWriter.WriteHeader(status)
+}
+
+// --- Middlewares de Observabilidad (Implementación básica) ---
+
+func withMetrics(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Metrics: received request for %s %s", r.Method, r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func withTracing(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Tracing: starting trace for %s %s", r.Method, r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
 }

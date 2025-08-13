@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2025 Miguel Mamani <miguel.coder.per@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package auth
 
 import (
@@ -12,11 +29,11 @@ import (
 
 const (
 	// Argon2 parameters
-	saltLength = 32
-	keyLength  = 32
-	time       = 3
-	memory     = 64 * 1024
-	threads    = 4
+	saltLength   = 32
+	keyLength    = 32
+	argon2Time   = 3
+	memory       = 64 * 1024
+	threads      = 4
 )
 
 // PasswordHasher handles password hashing and verification
@@ -34,7 +51,7 @@ func (ph *PasswordHasher) HashPassword(password string) (string, error) {
 		return "", fmt.Errorf("failed to generate salt: %w", err)
 	}
 
-	hash := argon2.IDKey([]byte(password), salt, time, memory, threads, keyLength)
+	hash := argon2.IDKey([]byte(password), salt, argon2Time, memory, threads, keyLength)
 
 	// Encode salt and hash to base64
 	saltBase64 := base64.RawStdEncoding.EncodeToString(salt)
@@ -42,7 +59,7 @@ func (ph *PasswordHasher) HashPassword(password string) (string, error) {
 
 	// Format: $argon2id$v=19$m=65536,t=3,p=4$salt$hash
 	encodedHash := fmt.Sprintf("$argon2id$v=19$m=%d,t=%d,p=%d$%s$%s",
-		memory, time, threads, saltBase64, hashBase64)
+		memory, argon2Time, threads, saltBase64, hashBase64)
 
 	return encodedHash, nil
 }
@@ -54,7 +71,7 @@ func (ph *PasswordHasher) VerifyPassword(password, hashedPassword string) bool {
 		return false
 	}
 
-	otherHash := argon2.IDKey([]byte(password), salt, time, memory, threads, keyLength)
+	otherHash := argon2.IDKey([]byte(password), salt, argon2Time, memory, threads, keyLength)
 
 	return subtle.ConstantTimeCompare(hash, otherHash) == 1
 }
